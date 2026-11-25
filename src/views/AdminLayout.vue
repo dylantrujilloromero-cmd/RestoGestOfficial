@@ -24,24 +24,24 @@
         </div>
         <div v-if="loginForm.error" class="login-error">{{ loginForm.error }}</div>
         <button class="btn btn-primary login-btn" @click="doLogin" :disabled="loginLoading">
-          <span v-if="loginLoading">Verificando...</span>
-          <span v-else>Iniciar Sesión</span>
+          <span v-if="loginLoading"><span class="spinner-border spinner-border-sm me-2"></span>Verificando...</span>
+          <span v-else>Iniciar sesión</span>
         </button>
-        <p class="login-recover-link" style="text-align:center; margin-top:12px;">
-          <a href="#" @click.prevent="showRecoverPassword = true" style="color: var(--primary); font-size: 0.85rem; text-decoration: underline;">¿Olvidaste tu contraseña?</a>
+        <p class="text-center mt-3 mb-0">
+          <a href="#" class="small" @click.prevent="showRecoverPassword = true">¿Olvidaste tu contraseña?</a>
         </p>
       </div>
 
       <!-- Recover Password -->
       <div v-if="showRecoverPassword" class="login-form">
-        <h3 style="text-align:center; margin-bottom:16px; color: var(--secondary);">Recuperar Contraseña</h3>
-        <p style="text-align:center; font-size:0.85rem; color: var(--text-muted); margin-bottom:20px;">Ingresa tu correo electrónico y te enviaremos las instrucciones para recuperar tu contraseña.</p>
+        <h3 class="text-center mb-2">Recuperar contraseña</h3>
+        <p class="text-center small text-secondary mb-4">Ingresa tu correo electrónico y te enviaremos las instrucciones para recuperar tu contraseña.</p>
         <div class="form-group">
           <label>Correo Electrónico</label>
           <input type="email" class="form-control" placeholder="correo@ejemplo.com" v-model="recoverForm.email" @keyup.enter="doRecoverPassword">
         </div>
         <div v-if="recoverForm.error" class="login-error">{{ recoverForm.error }}</div>
-        <div v-if="recoverForm.message" style="background:#ecfdf5; border:1px solid #86efac; border-radius:6px; color:#065f46; padding:10px 14px; font-size:0.85rem; margin-bottom:14px;">{{ recoverForm.message }}</div>
+        <div v-if="recoverForm.message" class="alert border-0 py-2 small fw-bold" style="background: var(--mint); color: var(--mint-ink);">{{ recoverForm.message }}</div>
         <button class="btn btn-primary login-btn" @click="doRecoverPassword">Enviar Instrucciones</button>
         <button class="btn btn-secondary login-btn" style="margin-top:8px;" @click="cancelRecover">Volver al Inicio de Sesión</button>
       </div>
@@ -218,8 +218,8 @@
     />
 
     <!-- Toast -->
-    <div class="toast-container" v-if="toastVisible">
-      <div class="toast"><span>{{ toastMessage }}</span></div>
+    <div class="app-toast-container" v-if="toastVisible">
+      <div class="app-toast"><span>{{ toastMessage }}</span></div>
     </div>
   </template>
 </template>

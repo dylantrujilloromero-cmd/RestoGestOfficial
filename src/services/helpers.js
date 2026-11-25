@@ -43,6 +43,7 @@ export function escapeHtml(str) {
 }
 
 export const ocasionesDisponibles = [
+  { id: 'OTRO',                 label: 'Sin ocasión especial' },
   { id: 'CUMPLEAÑOS',           label: 'Cumpleaños' },
   { id: 'ANIVERSARIO',          label: 'Aniversario' },
   { id: 'CITA_ROMANTICA',       label: 'Cita Romántica' },

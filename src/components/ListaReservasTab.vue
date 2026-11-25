@@ -3,7 +3,7 @@
     <div class="day-schedule-section">
       <div class="schedule-header">
         <h3>Listado Completo de Reservas ({{ filteredReservas.length }})</h3>
-        <button class="btn btn-primary" @click="$emit('openCreateModal')">➕ Nueva Reserva</button>
+        <button class="btn btn-primary" @click="$emit('openCreateModal')"><i class="bi bi-plus-lg"></i> Nueva reserva</button>
       </div>
 
       <div class="reservations-list">

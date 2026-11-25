@@ -5,7 +5,7 @@
         <h3>Novedades — {{ currentRestaurant.nombre }}</h3>
         <div style="display:flex; gap:12px; align-items:center;">
           <input type="text" class="form-control" placeholder="Buscar por asunto..." :value="busquedaNovedad" @input="$emit('update:busquedaNovedad', $event.target.value)" style="max-width:250px;">
-          <button class="btn btn-primary" @click="$emit('openNovedadForm')">➕ Agregar Novedad</button>
+          <button class="btn btn-primary" @click="$emit('openNovedadForm')"><i class="bi bi-plus-lg"></i> Agregar novedad</button>
         </div>
       </div>
       <!-- Filtros -->

@@ -4,9 +4,9 @@
       <div class="calendar-header">
         <div class="calendar-nav">
           <button class="btn btn-secondary" @click="$emit('goToToday')">Hoy</button>
-          <button class="btn-icon" @click="$emit('prevMonth')">◀</button>
+          <button class="btn-icon" @click="$emit('prevMonth')" aria-label="Mes anterior"><i class="bi bi-chevron-left"></i></button>
           <h2>{{ monthYearTitle }}</h2>
-          <button class="btn-icon" @click="$emit('nextMonth')">▶</button>
+          <button class="btn-icon" @click="$emit('nextMonth')" aria-label="Mes siguiente"><i class="bi bi-chevron-right"></i></button>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-muted);">
           Haz clic en cualquier día para ver sus reservas programadas
@@ -60,7 +60,7 @@
           </p>
         </div>
         <button class="btn btn-primary" @click="$emit('openCreateModal', selectedDateStr)">
-          <span>➕ Añadir en esta fecha</span>
+          <span><i class="bi bi-plus-lg"></i> Añadir en esta fecha</span>
         </button>
       </div>
 

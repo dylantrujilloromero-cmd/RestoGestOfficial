@@ -20,7 +20,7 @@
           <label class="rest-logo-label">Logo del Restaurante:</label>
           <div style="display: flex; align-items: center; gap: 12px;">
             <img v-if="getRestaurantLogo(r.id)" :src="getRestaurantLogo(r.id)" alt="Logo" class="rest-logo-thumb">
-            <div v-else class="rest-logo-thumb-placeholder">🍽️</div>
+            <div v-else class="rest-logo-thumb-placeholder"><i class="bi bi-shop"></i></div>
             <label class="btn btn-secondary" style="cursor:pointer; margin: 0;">
               Subir Logo
               <input type="file" accept="image/*" @change="$emit('onRestaurantLogoUpload', $event, r.id)" style="display:none;">
@@ -158,7 +158,7 @@
       <div class="users-list">
         <div v-for="user in adminUsuarios" :key="user.id" class="user-card">
           <div class="user-card-info">
-            <div class="user-avatar">👤</div>
+            <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
             <div>
               <div class="user-card-name">{{ user.nombre_completo }}</div>
               <div class="user-card-email">{{ user.email }}</div>
@@ -173,7 +173,7 @@
           </div>
         </div>
         <div v-if="adminUsuarios.length === 0" class="empty-state" style="padding: 30px 0;">
-          <div class="empty-state-icon">👤</div>
+          <div class="empty-state-icon"><i class="bi bi-people"></i></div>
           <h4>No hay cuentas de administrador aún</h4>
           <p>Usa el botón "Nueva Cuenta" para crear la primera.</p>
         </div>

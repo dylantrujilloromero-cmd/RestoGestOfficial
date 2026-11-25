@@ -3,13 +3,13 @@
     <!-- TOP BAR -->
     <header class="pub-topbar">
       <div class="topbar-left">
-        <div class="topbar-logo">🍽️</div>
+        <div class="topbar-logo"><i class="bi bi-cup-hot"></i></div>
         <div>
           <h1>RestoGest</h1>
           <p>Sistema de Reservas</p>
         </div>
       </div>
-      <router-link class="btn-back" to="/reservar">&#8592; Volver a restaurantes</router-link>
+      <router-link class="btn-back" to="/reservar"><i class="bi bi-arrow-left"></i> Volver a restaurantes</router-link>
     </header>
 
     <!-- STEPS -->
@@ -37,7 +37,7 @@
       <div v-if="!showSuccess">
 
         <!-- HEADER DEL RESTAURANTE -->
-        <div v-if="restaurante" class="rest-header-card">
+        <div v-if="restaurante" class="rest-header-card" :class="'t-' + restaurante.slug">
           <div class="rest-logo-box">
             <img v-if="restaurantLogo" :src="restaurantLogo" :alt="restaurante.nombre">
             <span v-else>{{ restaurantEmoji }}</span>
@@ -46,9 +46,9 @@
             <h2>{{ restaurante.nombre }}</h2>
             <p>{{ restaurante.descripcion || '' }}</p>
             <div class="rest-header-meta">
-              <span>📍 {{ restaurante.direccion || '' }}</span>
-              <span>📞 {{ restaurante.telefono || '' }}</span>
-              <span>🕐 {{ formatTimeTo12h(restaurante.hora_apertura) }} – {{ formatTimeTo12h(restaurante.hora_cierre) }}</span>
+              <span><i class="bi bi-geo-alt"></i> {{ restaurante.direccion || '' }}</span>
+              <span><i class="bi bi-telephone"></i> {{ restaurante.telefono || '' }}</span>
+              <span><i class="bi bi-clock"></i> {{ formatTimeTo12h(restaurante.hora_apertura) }} – {{ formatTimeTo12h(restaurante.hora_cierre) }}</span>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
         <!-- CARTA DEL RESTAURANTE -->
         <div class="section-card">
           <div class="section-header">
-            <div class="section-header-icon">📋</div>
+            <div class="section-header-icon"><i class="bi bi-journal-richtext"></i></div>
             <div>
               <h3>Nuestra Carta</h3>
               <p>Consulta nuestros platos y menús disponibles</p>
@@ -66,7 +66,7 @@
             <iframe class="carta-pdf-frame" :src="restaurantCarta" :title="'Carta ' + (restaurante?.nombre || '')"></iframe>
           </div>
           <div v-else class="carta-no-pdf">
-            <div class="icon">📋</div>
+            <div class="icon"><i class="bi bi-journal-x"></i></div>
             <p>La carta de este restaurante aún no ha sido cargada.<br>Puedes consultar el menú directamente en el restaurante o por teléfono.</p>
           </div>
         </div>
@@ -74,7 +74,7 @@
         <!-- MENSAJE DEL ADMINISTRADOR -->
         <div v-if="adminMessage" class="section-card">
           <div class="section-header">
-            <div class="section-header-icon">📢</div>
+            <div class="section-header-icon"><i class="bi bi-megaphone"></i></div>
             <div>
               <h3>Información importante</h3>
               <p>Mensaje del restaurante para sus clientes</p>
@@ -82,7 +82,7 @@
           </div>
           <div style="padding: 20px 24px;">
             <div class="admin-message-box">
-              <div class="admin-message-label">📌 Aviso del restaurante</div>
+              <div class="admin-message-label"><i class="bi bi-pin-angle"></i> Aviso del restaurante</div>
               <div class="admin-message-text">{{ adminMessage }}</div>
             </div>
           </div>
@@ -91,7 +91,7 @@
         <!-- FORMULARIO DE RESERVA -->
         <div class="section-card">
           <div class="section-header">
-            <div class="section-header-icon">📅</div>
+            <div class="section-header-icon"><i class="bi bi-calendar-event"></i></div>
             <div>
               <h3>Formulario de Reserva</h3>
               <p>Completa los datos para apartar tu mesa</p>
@@ -125,7 +125,7 @@
             </div>
             <div class="form-row">
               <div class="form-group" :class="{ 'has-error': errors.telefono }">
-                <label>Teléfono de Contacto <span>*</span> <small style="font-weight:400;color:#718096">(solo números, máx. 10)</small></label>
+                <label>Teléfono de Contacto <span>*</span> <small class="text-secondary fw-normal">(solo números, máx. 10)</small></label>
                 <input type="tel" class="form-control" :class="{ invalid: errors.telefono }" v-model="form.telefono" placeholder="3001234567" maxlength="10" @input="filterPhone">
                 <span v-if="errors.telefono" class="field-error">{{ errors.telefono }}</span>
               </div>
@@ -168,12 +168,12 @@
             </div>
 
             <!-- COMPROBANTE DE PAGO -->
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1.5px dashed #e2e8f0;">
+            <div class="comprobante-block">
               <div class="form-group" style="margin-bottom: 8px;">
-                <label style="font-size:0.9rem; font-weight:700; color:#1a2238;">
-                  📎 Comprobante de Pago <span style="color:#e74c3c">*</span>
+                <label>
+                  <i class="bi bi-paperclip"></i> Comprobante de pago <span>*</span>
                 </label>
-                <p style="font-size:0.78rem;color:#718096;margin-top:2px;">
+                <p class="upload-help">
                   Sube una imagen (JPG, PNG, WEBP) o PDF de tu comprobante de pago. Se adjuntará a tu reserva y se incluirá en el comprobante descargable.
                 </p>
               </div>
@@ -182,20 +182,20 @@
               <div v-if="comprobanteFile" class="upload-preview">
                 <div>
                   <img v-if="comprobanteIsImage" :src="comprobanteDataURL" alt="comprobante" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-                  <span v-else class="file-icon">📄</span>
+                  <span v-else class="file-icon"><i class="bi bi-file-earmark-pdf"></i></span>
                 </div>
                 <div class="upload-preview-info">
                   <div class="upload-preview-name">{{ comprobanteFile.name }}</div>
                   <div class="upload-preview-size">{{ formatBytes(comprobanteFile.size) }}</div>
                 </div>
-                <button class="btn-remove" @click="removeComprobante" title="Quitar archivo">🗑️</button>
+                <button class="btn-remove" @click="removeComprobante" title="Quitar archivo"><i class="bi bi-trash3"></i></button>
               </div>
 
               <!-- Drop zone -->
               <div v-if="!comprobanteFile" class="upload-area" :class="{ dragover: isDragover }" :style="uploadAreaBorderStyle"
                    @dragover.prevent="isDragover = true" @dragleave="isDragover = false" @drop.prevent="onDrop">
                 <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" @change="handleComprobanteChange">
-                <div class="upload-icon">📤</div>
+                <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
                 <div class="upload-title">Arrastra aquí tu comprobante o haz clic</div>
                 <div class="upload-sub">JPG, PNG, WEBP, PDF — Máx. 3 MB</div>
               </div>
@@ -213,7 +213,7 @@
             <button class="btn btn-primary" :disabled="isSubmitting" @click="confirmarReserva">
               <div v-if="isSubmitting" class="spinner"></div>
               <span v-if="isSubmitting">Enviando reserva...</span>
-              <span v-else>✅ Confirmar Reserva</span>
+              <span v-else><i class="bi bi-check2-circle"></i> Confirmar reserva</span>
             </button>
           </div>
         </div>
@@ -221,23 +221,23 @@
 
       <!-- PANTALLA DE ÉXITO -->
       <div v-if="showSuccess && confirmedReserva" class="success-screen">
-        <div class="success-icon">✅</div>
+        <div class="success-icon"><i class="bi bi-check-lg"></i></div>
         <h2>¡Reserva Confirmada!</h2>
         <p>Tu reserva ha sido registrada exitosamente. Descarga el comprobante para presentarlo el día de tu visita.</p>
 
         <!-- Badge de estado BD -->
         <div style="margin-bottom:20px;">
-          <div v-if="confirmedReserva._guardadoEnBD" style="background:#d1fae5;color:#065f46;border:1.5px solid #6ee7b7;border-radius:10px;padding:10px 16px;font-size:0.84rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+          <div v-if="confirmedReserva._guardadoEnBD" class="save-note ok">
             &#10003; Reserva guardada en la base de datos correctamente.
           </div>
-          <div v-else style="background:#fef9c3;color:#854d0e;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 16px;font-size:0.84rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+          <div v-else class="save-note warn">
             &#9888; Guardado localmente. Se sincronizará cuando el servidor esté disponible.
           </div>
         </div>
 
         <!-- Resumen -->
         <div class="reservation-summary">
-          <div class="summary-title">🧾 Resumen de tu Reserva</div>
+          <div class="summary-title"><i class="bi bi-receipt"></i> Resumen de tu reserva</div>
           <div class="summary-grid">
             <div class="summary-item"><label>Restaurante</label><span>{{ confirmedReserva.restaurante_nombre }}</span></div>
             <div class="summary-item"><label>Fecha</label><span>{{ formatDate(confirmedReserva.fecha) }}</span></div>
@@ -247,20 +247,20 @@
             <div class="summary-item"><label>Teléfono</label><span>{{ confirmedReserva.telefono_contacto }}</span></div>
             <div class="summary-item"><label>Ocasión</label><span>{{ confirmedReserva.ocasion_label }}</span></div>
             <div class="summary-item"><label>Plan</label><span>Plan {{ confirmedReserva.plan }}</span></div>
-            <div class="summary-item"><label>Postre</label><span>{{ confirmedReserva.postre_incluido ? '✅ Incluido' : '✗ No incluido' }}</span></div>
-            <div class="summary-item"><label>Estado</label><span>🟡 PENDIENTE</span></div>
+            <div class="summary-item"><label>Postre</label><span>{{ confirmedReserva.postre_incluido ? 'Incluido' : 'No incluido' }}</span></div>
+            <div class="summary-item"><label>Estado</label><span class="pill-pending">Pendiente</span></div>
             <div v-if="confirmedReserva.descripcion_notas" class="summary-item" style="grid-column:1/-1;"><label>Notas</label><span>{{ confirmedReserva.descripcion_notas }}</span></div>
           </div>
         </div>
 
         <!-- Vista previa comprobante de pago -->
-        <div v-if="comprobanteDataURL" style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px; padding:18px 20px; margin-bottom:20px; text-align:left;">
-          <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#718096;margin-bottom:10px;">
-            📎 Comprobante de Pago Adjunto
+        <div v-if="comprobanteDataURL" class="proof-box">
+          <div class="summary-title">
+            <i class="bi bi-paperclip"></i> Comprobante de pago adjunto
           </div>
-          <img v-if="comprobanteIsImage" :src="comprobanteDataURL" alt="comprobante de pago" style="max-width:100%;max-height:300px;object-fit:contain;border-radius:10px;border:1.5px solid #e2e8f0;">
-          <div v-else style="display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
-            <span style="font-size:2rem;">📄</span>
+          <img v-if="comprobanteIsImage" :src="comprobanteDataURL" alt="comprobante de pago" class="proof-img">
+          <div v-else class="proof-file">
+            <span class="proof-file-icon"><i class="bi bi-file-earmark-pdf"></i></span>
             <div>
               <div style="font-weight:700;font-size:0.88rem;">{{ confirmedReserva.comprobante_nombre }}</div>
               <div style="font-size:0.75rem;color:#718096;">{{ comprobanteFile ? formatBytes(comprobanteFile.size) : '' }}</div>
@@ -269,11 +269,11 @@
         </div>
 
         <button class="btn-download" @click="downloadReserva">
-          ⬇️ Descargar Comprobante de Reserva
+          <i class="bi bi-download"></i> Descargar comprobante de reserva
         </button>
         <br>
         <router-link class="btn btn-secondary" to="/reservar" style="display:inline-flex; margin:0 auto; text-decoration:none;">
-          &#8592; Hacer otra reserva
+          <i class="bi bi-arrow-left"></i> Hacer otra reserva
         </router-link>
       </div>
 
@@ -463,7 +463,7 @@ function downloadReserva() {
   const fechaGenerado = new Date().toLocaleString('es-MX', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   const postre = r.postre_incluido ? '&#9989; Incluido' : 'No incluido'
 
-  const css = '* { box-sizing:border-box; margin:0; padding:0; } body { font-family:"Segoe UI",Arial,sans-serif; background:#f5f7fb; padding:40px 20px; color:#2d3748; } .card { background:#fff; max-width:700px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.12); } .card-header { background:linear-gradient(135deg,#1a2238,#2c3652); color:#fff; padding:32px; } .card-header h1 { font-size:1.4rem; font-weight:800; margin-bottom:4px; } .card-header .sub { color:rgba(255,255,255,0.6); font-size:0.85rem; } .card-header .code { color:rgba(255,255,255,0.5); font-size:0.78rem; margin-top:6px; } .card-body { padding:32px; } .rest-name { font-size:1.3rem; font-weight:800; color:#c59b27; margin-bottom:20px; } .status-badge { display:inline-block; padding:5px 14px; border-radius:9999px; font-size:0.82rem; font-weight:700; background:#fef9c3; color:#854d0e; margin-bottom:20px; } .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; } .item label { display:block; font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#718096; letter-spacing:.5px; margin-bottom:4px; } .item span { font-size:0.92rem; font-weight:700; color:#2d3748; } .divider { height:1px; background:#e2e8f0; margin:20px 0; } .section-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#718096; letter-spacing:.5px; margin-bottom:8px; } .notas-section { background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:20px; } .notas-section p { font-size:0.88rem; color:#4a5568; } .comprobante-section { margin-bottom:20px; } .footer { text-align:center; font-size:0.73rem; color:#a0aec0; padding:18px 32px; border-top:1px solid #e2e8f0; line-height:1.6; } .footer strong { color:#718096; } @media print { body{padding:0;background:#fff;} .card{box-shadow:none;border-radius:0;max-width:100%;} }'
+  const css = '* { box-sizing:border-box; margin:0; padding:0; } body { font-family:"Segoe UI",Arial,sans-serif; background:#fbf8f4; padding:40px 20px; color:#2d3748; } .card { background:#fff; max-width:700px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.12); } .card-header { background:#ece8fb; color:#2f2a60; padding:32px; } .card-header h1 { font-size:1.4rem; font-weight:800; margin-bottom:4px; } .card-header .sub { color:rgba(47,42,96,0.65); font-size:0.85rem; } .card-header .code { color:rgba(47,42,96,0.55); font-size:0.78rem; margin-top:6px; } .card-body { padding:32px; } .rest-name { font-size:1.3rem; font-weight:800; color:#6f62c9; margin-bottom:20px; } .status-badge { display:inline-block; padding:5px 14px; border-radius:9999px; font-size:0.82rem; font-weight:700; background:#fbf0c4; color:#7d6310; margin-bottom:20px; } .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; } .item label { display:block; font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#718096; letter-spacing:.5px; margin-bottom:4px; } .item span { font-size:0.92rem; font-weight:700; color:#2d3748; } .divider { height:1px; background:#e2e8f0; margin:20px 0; } .section-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#718096; letter-spacing:.5px; margin-bottom:8px; } .notas-section { background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:20px; } .notas-section p { font-size:0.88rem; color:#4a5568; } .comprobante-section { margin-bottom:20px; } .footer { text-align:center; font-size:0.73rem; color:#a0aec0; padding:18px 32px; border-top:1px solid #e2e8f0; line-height:1.6; } .footer strong { color:#718096; } @media print { body{padding:0;background:#fff;} .card{box-shadow:none;border-radius:0;max-width:100%;} }'
 
   const docHtml = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante Reserva</title><style>' + css + '</style></head><body>' +
     '<div class="card">' +
@@ -506,134 +506,125 @@ function downloadReserva() {
 </script>
 
 <style scoped>
-.formulario-page {
-  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
-  background: #f5f7fb;
-  color: #2d3748;
-  min-height: 100vh;
-}
+.formulario-page { background: var(--cream); color: var(--ink); width: 100%; min-height: 100vh; }
 
-/* TOPBAR */
-.pub-topbar { background: #1a2238; padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
-.topbar-left { display: flex; align-items: center; gap: 14px; }
-.topbar-logo { background: linear-gradient(135deg, #c59b27, #9e7916); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-.pub-topbar h1 { font-size: 1.05rem; font-weight: 800; color: #fff; }
-.pub-topbar p { font-size: 0.75rem; color: rgba(255,255,255,0.55); }
-.btn-back { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.75); padding: 8px 16px; border-radius: 8px; font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; }
-.btn-back:hover { background: rgba(255,255,255,0.18); color: #fff; }
+/* BARRA SUPERIOR */
+.pub-topbar { background: var(--paper); border-bottom: 1px solid var(--line); padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-logo { width: 38px; height: 38px; border-radius: 12px; background: var(--lilac); color: var(--lilac-ink); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.pub-topbar h1 { font-size: 1.2rem; margin: 0; line-height: 1.1; }
+.pub-topbar p { font-size: 0.75rem; color: var(--ink-soft); margin: 0; }
+.btn-back { background: var(--sand); color: var(--ink); padding: 8px 16px; border-radius: 10px; font-size: 0.84rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.btn-back:hover { background: #e9e2d9; color: var(--ink); }
 
-/* STEPS */
-.pub-steps-bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 14px 30px; display: flex; align-items: center; }
-.step { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: #718096; }
-.step.active { color: #1a2238; }
-.step.done { color: #27ae60; }
-.step-num { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; }
-.step.active .step-num { background: #c59b27; color: #fff; }
-.step.done .step-num { background: #27ae60; color: #fff; font-size: 0.9rem; }
-.step-line { width: 40px; height: 2px; background: #e2e8f0; margin: 0 10px; }
+/* PASOS */
+.pub-steps-bar { background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px 30px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 0; }
+.step { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; color: #aaa6b8; }
+.step.active { color: var(--ink); }
+.step.done { color: var(--mint-ink); }
+.step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--sand); color: var(--ink-soft); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; }
+.step.active .step-num { background: var(--lilac); color: var(--lilac-ink); }
+.step.done .step-num { background: var(--mint); color: var(--mint-ink); }
+.step-line { width: 40px; height: 2px; background: var(--line); margin: 0 10px; }
 
-/* LAYOUT */
-.page-content { max-width: 1000px; margin: 0 auto; padding: 36px 24px 80px; }
+.page-content { max-width: 960px; margin: 0 auto; padding: 32px 22px 80px; }
 
-/* RESTAURANT HEADER */
-.rest-header-card { background: #1a2238; border-radius: 18px; padding: 28px 30px; margin-bottom: 28px; display: flex; align-items: center; gap: 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.14); position: relative; overflow: hidden; }
-.rest-header-card::after { content: ''; position: absolute; right: -30px; top: -30px; width: 180px; height: 180px; border-radius: 50%; background: rgba(197,155,39,0.08); }
-.rest-logo-box { width: 70px; height: 70px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; flex-shrink: 0; border: 2px solid rgba(197,155,39,0.3); }
+/* CABECERA DEL RESTAURANTE (color pastel según restaurante) */
+.rest-header-card.t-innamorato-fusion { --c-bg: #f6c3bd; --c-ink: #5a211c; }
+.rest-header-card.t-cielo-rosa { --c-bg: #f6c6dc; --c-ink: #5d1a3c; }
+.rest-header-card.t-casa-juarez { --c-bg: #f6e3a1; --c-ink: #5a4806; }
+.rest-header-card { --c-bg: var(--lilac); --c-ink: var(--lilac-ink); background: var(--c-bg); color: var(--c-ink); border-radius: 24px; padding: 26px 30px; margin-bottom: 24px; display: flex; align-items: center; gap: 20px; }
+.rest-logo-box { width: 72px; height: 72px; border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.65); display: flex; align-items: center; justify-content: center; font-size: 2.3rem; flex-shrink: 0; }
 .rest-logo-box img { width: 100%; height: 100%; object-fit: cover; }
 .rest-header-info { flex: 1; }
-.rest-header-info h2 { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
-.rest-header-info p { color: rgba(255,255,255,0.6); font-size: 0.85rem; }
-.rest-header-meta { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
-.rest-header-meta span { font-size: 0.78rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 5px; }
+.rest-header-info h2 { font-size: 1.7rem; margin: 0 0 4px; color: var(--c-ink); }
+.rest-header-info p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
+.rest-header-meta { display: flex; gap: 8px 18px; margin-top: 12px; flex-wrap: wrap; }
+.rest-header-meta span { font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 6px; opacity: 0.85; }
 
-/* SECTION CARD */
-.section-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 24px; overflow: hidden; }
-.section-header { padding: 18px 24px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
-.section-header-icon { width: 36px; height: 36px; border-radius: 10px; background: #fef8e7; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.section-header h3 { font-size: 1rem; font-weight: 700; color: #1a2238; }
-.section-header p { font-size: 0.78rem; color: #718096; }
+/* TARJETAS DE SECCIÓN */
+.section-card { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; margin-bottom: 22px; overflow: hidden; }
+.section-header { padding: 18px 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+.section-header-icon { width: 38px; height: 38px; border-radius: 12px; background: var(--lilac-soft); color: var(--lilac-deep); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.section-header h3 { font-size: 1.1rem; margin: 0; }
+.section-header p { font-size: 0.8rem; color: var(--ink-soft); margin: 0; }
 .carta-pdf-frame { width: 100%; height: 550px; border: none; display: block; }
-.carta-no-pdf { padding: 50px 24px; text-align: center; color: #718096; }
-.carta-no-pdf .icon { font-size: 3rem; margin-bottom: 12px; }
-.carta-no-pdf p { font-size: 0.88rem; }
+.carta-no-pdf { padding: 46px 24px; text-align: center; color: var(--ink-soft); }
+.carta-no-pdf .icon { font-size: 2.6rem; margin-bottom: 10px; color: #c9c3d8; }
+.carta-no-pdf p { font-size: 0.9rem; margin: 0; }
 
-/* ADMIN MESSAGE */
-.admin-message-box { background: linear-gradient(135deg, #fef8e7, #fffdf5); border: 1px solid rgba(197,155,39,0.3); border-left: 5px solid #c59b27; border-radius: 12px; padding: 20px 22px; }
-.admin-message-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9e7916; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-.admin-message-text { font-size: 0.92rem; color: #5a4a1e; line-height: 1.7; white-space: pre-wrap; }
+.admin-message-box { background: var(--butter); border-radius: var(--radius-md); padding: 18px 22px; }
+.admin-message-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--butter-ink); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.admin-message-text { font-size: 0.93rem; color: #5b4a10; line-height: 1.7; white-space: pre-wrap; }
 
-/* FORM */
+/* FORMULARIO */
 .form-section { padding: 24px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group label { font-size: 0.82rem; font-weight: 600; color: #1a2238; }
-.form-group label span { color: #e74c3c; margin-left: 2px; }
-.form-control { border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; font-family: inherit; font-size: 0.9rem; color: #2d3748; background: #fff; transition: all 0.2s; width: 100%; }
-.form-control:focus { outline: none; border-color: #c59b27; box-shadow: 0 0 0 3px rgba(197,155,39,0.12); }
-textarea.form-control { resize: vertical; min-height: 90px; }
-select.form-control { cursor: pointer; }
-.form-control.invalid { border-color: #e74c3c; }
-.field-error { font-size: 0.75rem; color: #e74c3c; margin-top: 2px; }
-.has-error label { color: #e74c3c; }
+.form-row { margin-bottom: 16px; }
+.form-group label span { color: #d9737f; margin-left: 2px; }
+.form-control.invalid { border-color: #e8949d; background: #fff8f8; }
+.field-error { font-size: 0.76rem; color: var(--rose-ink); font-weight: 700; margin-top: 2px; }
+.has-error label { color: var(--rose-ink); }
 
-/* SWITCH */
-.switch-row { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; cursor: pointer; }
-.switch-label { font-size: 0.88rem; font-weight: 600; color: #1a2238; }
-.switch-desc { font-size: 0.75rem; color: #718096; margin-top: 2px; }
-.switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; inset: 0; background: #cbd5e0; border-radius: 24px; cursor: pointer; transition: 0.3s; }
-.slider:before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; left: 3px; top: 3px; transition: 0.3s; }
-.switch input:checked + .slider { background: #c59b27; }
-.switch input:checked + .slider:before { transform: translateX(20px); }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: var(--cream); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px; cursor: pointer; }
+.switch-label { font-size: 0.9rem; font-weight: 700; }
+.switch-desc { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
 
-/* UPLOAD */
-.upload-area { border: 2.5px dashed #e2e8f0; border-radius: 12px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.25s; background: #fafafa; margin-bottom: 16px; position: relative; }
-.upload-area:hover, .upload-area.dragover { border-color: #c59b27; background: #fef8e7; }
+/* COMPROBANTE */
+.comprobante-block { margin-top: 24px; padding-top: 20px; border-top: 1px dashed #ddd3c8; }
+.comprobante-block > .form-group > label { font-size: 0.95rem; }
+.upload-help { font-size: 0.8rem; color: var(--ink-soft); margin: 2px 0 0; }
+.upload-area { border: 2px dashed #d9d0c4; border-radius: var(--radius-md); padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--cream); margin-bottom: 16px; position: relative; }
+.upload-area:hover, .upload-area.dragover { border-color: var(--lilac-deep); background: var(--lilac-soft); }
 .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
-.upload-title { font-size: 0.92rem; font-weight: 700; color: #1a2238; margin-bottom: 4px; }
-.upload-sub { font-size: 0.78rem; color: #718096; }
-.upload-preview { display: flex; align-items: center; gap: 14px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+.upload-icon { font-size: 2.2rem; color: var(--lilac-deep); margin-bottom: 6px; }
+.upload-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 2px; }
+.upload-sub { font-size: 0.8rem; color: var(--ink-soft); }
+.upload-preview { display: flex; align-items: center; gap: 14px; background: var(--mint); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px; }
+.file-icon { font-size: 1.8rem; color: var(--mint-ink); }
 .upload-preview-info { flex: 1; }
-.upload-preview-name { font-size: 0.85rem; font-weight: 600; color: #065f46; }
-.upload-preview-size { font-size: 0.75rem; color: #047857; }
-.btn-remove { background: none; border: none; cursor: pointer; color: #dc2626; font-size: 1.1rem; padding: 4px; }
-.upload-img-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 1.5px solid #e2e8f0; }
+.upload-preview-name { font-size: 0.88rem; font-weight: 800; color: var(--mint-ink); }
+.upload-preview-size { font-size: 0.76rem; color: var(--mint-ink); opacity: 0.8; }
+.btn-remove { background: none; border: none; cursor: pointer; color: var(--rose-ink); font-size: 1.1rem; padding: 4px 8px; border-radius: 8px; }
+.btn-remove:hover { background: var(--rose); }
+.upload-img-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: var(--radius-sm); margin-top: 10px; border: 1px solid var(--line); }
 
-/* ACTIONS */
-.actions-bar { display: flex; gap: 14px; justify-content: flex-end; padding: 20px 24px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; }
-.btn { padding: 13px 28px; border-radius: 10px; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.22s; display: flex; align-items: center; gap: 8px; }
-.btn-primary { background: linear-gradient(90deg, #c59b27, #9e7916); color: #fff; box-shadow: 0 4px 14px rgba(197,155,39,0.3); }
-.btn-primary:hover { background: linear-gradient(90deg, #d4a933, #c59b27); box-shadow: 0 6px 20px rgba(197,155,39,0.45); transform: translateY(-1px); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.btn-secondary { background: #f1f5f9; color: #1a2238; border: 1.5px solid #e2e8f0; }
-.btn-secondary:hover { background: #e2e8f0; }
+.actions-bar { display: flex; gap: 12px; justify-content: flex-end; padding: 18px 24px; border-top: 1px solid var(--line); background: var(--cream); flex-wrap: wrap; }
+.actions-bar .btn { --bs-btn-padding-x: 1.5rem; --bs-btn-padding-y: 0.7rem; }
 
-/* SUCCESS SCREEN */
-.success-screen { background: #fff; border-radius: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.14); padding: 50px 36px; text-align: center; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.success-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #d1fae5, #a7f3d0); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 24px; box-shadow: 0 8px 24px rgba(39,174,96,0.25); }
-.success-screen h2 { font-size: 1.7rem; font-weight: 800; color: #1a2238; margin-bottom: 10px; }
-.success-screen > p { color: #718096; font-size: 0.95rem; line-height: 1.7; max-width: 450px; margin: 0 auto 28px; }
-.reservation-summary { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 22px; text-align: left; margin-bottom: 24px; }
-.summary-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #718096; margin-bottom: 14px; }
-.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media (max-width: 500px) { .summary-grid { grid-template-columns: 1fr; } }
-.summary-item label { display: block; font-size: 0.72rem; font-weight: 600; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-.summary-item span { font-size: 0.92rem; font-weight: 700; color: #1a2238; }
-.btn-download { background: linear-gradient(90deg, #1a2238, #2c3652); color: #fff; padding: 14px 32px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.22s; box-shadow: 0 4px 16px rgba(26,34,56,0.2); margin-bottom: 14px; }
-.btn-download:hover { background: linear-gradient(90deg, #2c3652, #1a2238); box-shadow: 0 8px 24px rgba(26,34,56,0.3); transform: translateY(-1px); }
+/* PANTALLA DE ÉXITO */
+.success-screen { background: var(--paper); border: 1px solid var(--line); border-radius: 26px; padding: 46px 34px; text-align: center; animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.success-icon { width: 76px; height: 76px; border-radius: 50%; background: var(--mint); color: var(--mint-ink); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 22px; }
+.success-screen h2 { font-size: 1.9rem; margin-bottom: 10px; }
+.success-screen > p { color: var(--ink-soft); font-size: 0.97rem; line-height: 1.7; max-width: 460px; margin: 0 auto 24px; }
+.save-note { display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); padding: 10px 16px; font-size: 0.86rem; font-weight: 800; }
+.save-note.ok { background: var(--mint); color: var(--mint-ink); }
+.save-note.warn { background: var(--butter); color: var(--butter-ink); }
+.reservation-summary { background: var(--cream); border-radius: var(--radius-md); padding: 22px; text-align: left; margin: 20px 0 22px; }
+.summary-title { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.summary-item label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+.summary-item span { font-size: 0.95rem; font-weight: 800; }
+.pill-pending { background: var(--butter); color: var(--butter-ink); padding: 2px 12px; border-radius: 9999px; font-size: 0.78rem !important; }
+.proof-box { background: var(--cream); border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 22px; text-align: left; }
+.proof-img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+.proof-file { display: flex; align-items: center; gap: 12px; background: var(--paper); border-radius: var(--radius-sm); padding: 12px 14px; }
+.proof-file-icon { font-size: 1.8rem; color: var(--lilac-deep); }
+.btn-download { background: var(--lilac); color: var(--lilac-ink); padding: 13px 30px; border-radius: 14px; font-size: 0.96rem; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.2s; margin-bottom: 14px; }
+.btn-download:hover { background: #bfb4f0; }
 
-/* SPINNER */
-.spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(47,42,96,0.25); border-top-color: var(--lilac-ink); border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-/* TOAST */
-.pub-toast { position: fixed; bottom: 30px; right: 30px; background: #1a2238; color: #fff; padding: 14px 22px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 28px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+/* AVISO */
+.pub-toast { position: fixed; bottom: 28px; right: 28px; background: var(--paper); color: var(--ink); padding: 13px 20px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 700; box-shadow: var(--shadow-lg); border-left: 5px solid var(--lilac-deep); z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: calc(100vw - 40px); }
 .pub-toast.show { transform: translateY(0); opacity: 1; }
-.pub-toast.success { background: #065f46; }
-.pub-toast.error { background: #991b1b; }
+.pub-toast.success { border-left-color: #6fcf9d; }
+.pub-toast.error { border-left-color: #e8949d; }
 
-@keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 600px) {
+  .pub-topbar, .pub-steps-bar { padding-left: 16px; padding-right: 16px; }
+  .rest-header-card { flex-direction: column; align-items: flex-start; padding: 22px; }
+  .summary-grid { grid-template-columns: 1fr; }
+}
 </style>

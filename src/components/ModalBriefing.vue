@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-backdrop" @click.self="$emit('close')">
+  <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-content">
       <div class="modal-header">
         <h3>📝 Agregar Briefing — {{ currentRestaurant.nombre }}</h3>

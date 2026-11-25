@@ -3,7 +3,7 @@
     <div class="day-schedule-section">
       <div class="schedule-header">
         <h3>Briefing — {{ currentRestaurant.nombre }}</h3>
-        <button class="btn btn-primary" @click="$emit('openBriefingForm')">➕ Agregar Briefing</button>
+        <button class="btn btn-primary" @click="$emit('openBriefingForm')"><i class="bi bi-plus-lg"></i> Agregar briefing</button>
       </div>
       <!-- Lista -->
       <div v-if="filteredBriefings.length === 0" class="empty-state">
