@@ -48,7 +48,7 @@
 
     <!-- RESTAURANTES -->
     <section class="restaurants-grid">
-      <article v-for="r in restaurantesActivos" :key="r.id" class="rest-card" :class="bannerClass[r.id] || 'banner-innamorato'">
+      <article v-for="r in restaurantesActivos" :key="r.id" class="rest-card" :class="'t-' + r.slug">
         <div class="rest-banner">
           <img v-if="getRestaurantLogo(r.id)" class="logo-img" :src="getRestaurantLogo(r.id)" :alt="r.nombre">
           <i v-else class="bi bi-shop banner-icon"></i>
@@ -83,14 +83,9 @@ import { formatTimeTo12h, escapeHtml } from '../services/helpers.js'
 const restaurantes = ref(DataService.getRestaurantes())
 const restaurantesActivos = computed(() => restaurantes.value.filter(r => r.activo !== false))
 
-const bannerClass = {
-  '11111111-1111-1111-1111-111111111111': 'banner-innamorato',
-  '22222222-2222-2222-2222-222222222222': 'banner-cielorosa',
-  '33333333-3333-3333-3333-333333333333': 'banner-casajuarez'
-}
 const statusLabel = {
   CONFIRMADA: 'Confirmada',
-  PENDIENTE: '⏳ Pendiente',
+  PENDIENTE: 'Pendiente',
   CANCELADA: 'Cancelada',
   COMPLETADA: 'Completada'
 }
@@ -195,9 +190,10 @@ async function buscarReserva() {
 .search-result-not-found { background: var(--rose); color: var(--rose-ink); border-radius: var(--radius-md); padding: 14px 18px; text-align: center; font-size: 0.88rem; font-weight: 600; }
 
 /* RESTAURANTES */
-.banner-innamorato { --c-bg: #f6c3bd; --c-ink: #5a211c; }
-.banner-cielorosa { --c-bg: #f6c6dc; --c-ink: #5d1a3c; }
-.banner-casajuarez { --c-bg: #f6e3a1; --c-ink: #5a4806; }
+.rest-card { --c-bg: var(--lilac); --c-ink: var(--lilac-ink); }
+.rest-card.t-innamorato-fusion { --c-bg: #f6c3bd; --c-ink: #5a211c; }
+.rest-card.t-cielo-rosa { --c-bg: #f6c6dc; --c-ink: #5d1a3c; }
+.rest-card.t-casa-juarez { --c-bg: #f6e3a1; --c-ink: #5a4806; }
 
 .restaurants-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; width: 100%; max-width: 1080px; }
 .rest-card {

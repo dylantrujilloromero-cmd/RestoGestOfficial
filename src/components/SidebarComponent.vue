@@ -2,7 +2,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo-badge"><i class="bi bi-cup-hot"></i></div>
-      <div><h2>RestoGest</h2><span>3 restaurantes</span></div>
+      <div><h2>RestoGest</h2><span>{{ restaurantes.length }} restaurantes</span></div>
     </div>
 
     <div class="role-badge-panel">
@@ -11,7 +11,7 @@
         {{ currentUser?.rol === 'JEFE' ? 'Jefe' : 'Administrador' }}
       </div>
       <div class="user-name">{{ currentUser?.nombre_completo }}</div>
-      <div class="user-rest-assigned">{{ isJefe ? 'Supervisa los 3 restaurantes' : currentRestaurant.nombre }}</div>
+      <div class="user-rest-assigned">{{ isJefe ? 'Supervisa todos los restaurantes' : currentRestaurant.nombre }}</div>
       <button class="btn-logout" @click="$emit('logout')"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
     </div>
 

@@ -10,12 +10,23 @@ Todo se despliega en un solo proyecto de Vercel (gratis).
 ## 2. Probar en tu PC
 ```powershell
 Copy-Item .env.example .env      # y pega DATABASE_URL y un JWT_SECRET largo
-npm run db:setup                 # crea las tablas (el SQL del dueño portado a PostgreSQL) y carga los datos iniciales
+npm run db:setup                 # crea las tablas (el SQL del dueño pasado a PostgreSQL), sin insertar datos
 npm run api                      # terminal 1: API en http://localhost:3001
 npm run dev                      # terminal 2: web en http://localhost:5173
 ```
-Cuentas iniciales: `jefe_restaurantes@gmail.com` / `Jefe123` y `admin.*@reservas.com` / `admin123`.
-Para otras contraseñas, define `SEED_JEFE_PASSWORD` y `SEED_ADMIN_PASSWORD` en `.env` **antes** de `npm run db:setup`.
+Los datos (restaurantes, planes, usuarios, mensajes...) viven solo en Neon, no en el código. En una base vacía,
+cárgalos en Neon (por ejemplo con el SQL del dueño en el *SQL Editor*) o créalos desde la app.
+
+Para crear el primer Jefe en una base vacía (la contraseña se guarda con hash en la base):
+```powershell
+npm run db:jefe -- correo@ejemplo.com NuevaClave123 "Nombre del Jefe"
+```
+Después el Jefe crea las cuentas de administrador desde la app (*Ajustes y cuentas*).
+
+Para cambiar la contraseña de alguien que ya existe:
+```powershell
+npm run db:clave -- correo@ejemplo.com NuevaClave123
+```
 
 ## 3. Desplegar en Vercel
 1. Sube el proyecto a GitHub (`.env` ya está en `.gitignore`).

@@ -7,9 +7,7 @@
         <p class="login-subtitle">Sistema de Reservas Multirestaurante</p>
       </div>
       <div class="login-restaurants">
-        <span>INNAMORATO FUSION</span>
-        <span>CIELO ROSA</span>
-        <span>CASA JUAREZ</span>
+        <span v-for="r in restaurantesLogin" :key="r.id">{{ r.nombre }}</span>
       </div>
 
       <!-- Login Form -->
@@ -242,6 +240,9 @@ import ModalNovedad from '../components/ModalNovedad.vue'
 import ModalNovedadDetalle from '../components/ModalNovedadDetalle.vue'
 import ModalBriefing from '../components/ModalBriefing.vue'
 import ModalBriefingDetalle from '../components/ModalBriefingDetalle.vue'
+
+// Para mostrar los nombres en la pantalla de inicio (ya vienen de la base)
+const restaurantesLogin = DataService.getRestaurantes()
 
 const ocasionesArr = ocasionesDisponibles
 const planesSelectorArr = planesSelector
@@ -529,7 +530,7 @@ async function doLogin() {
       showToast('Bienvenido, ' + user.nombre_completo)
     } else {
       selectedRestaurantId.value = restaurantes.value[0]?.id || ''
-      showToast('Bienvenido, Jefe. Ves los 3 restaurantes.')
+      showToast('Bienvenido, Jefe. Ves todos los restaurantes.')
     }
   } catch (e) {
     DataService.logout()
