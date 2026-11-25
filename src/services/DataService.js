@@ -1,97 +1,184 @@
-// =============================================================================
-// CAPA DE DATOS: cliente de la API de RestoGest (Express + Neon PostgreSQL)
-// Los restaurantes se cargan una vez al iniciar (init) y se leen de forma
-// síncrona; todo lo demás se pide / guarda en el servidor.
-// =============================================================================
+// Habla con la API del servidor (Express + Neon).
+// Los restaurantes se cargan una vez al abrir la página; lo demás se pide cuando hace falta.
 
 let token = null // solo en memoria: al recargar la página hay que volver a entrar
 let restaurantes = []
 
 export class ApiError extends Error {
-  constructor(message, status) { super(message); this.status = status }
+  constructor(message, status) {
+    super(message)
+    this.status = status
+  }
 }
 
+// Hace la petición y devuelve el JSON. Si algo falla lanza un ApiError.
 async function api(path, { method = 'GET', body } = {}) {
-  let res
+  const headers = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (token) headers.Authorization = 'Bearer ' + token
+
+  let respuesta
   try {
-    res = await fetch('/api' + path, {
+    respuesta = await fetch('/api' + path, {
       method,
-      headers: {
-        ...(body !== undefined && { 'Content-Type': 'application/json' }),
-        ...(token && { Authorization: 'Bearer ' + token })
-      },
-      body: body !== undefined ? JSON.stringify(body) : undefined
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body)
     })
   } catch {
     throw new ApiError('No se pudo conectar con el servidor', 0)
   }
-  const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new ApiError(data.error || 'Error del servidor', res.status)
-  return data
+
+  const datos = await respuesta.json().catch(() => ({}))
+  if (!respuesta.ok) throw new ApiError(datos.error || 'Error del servidor', respuesta.status)
+  return datos
 }
 
-const byId = id => restaurantes.find(r => r.id === id)
-const mapBy = (list, key) => Object.fromEntries(list.filter(r => r[key]).map(r => [r.id, r[key]]))
+function buscarRestaurante(id) {
+  return restaurantes.find(r => r.id === id)
+}
+
+// Solo el Jefe puede ver los usuarios; para los demás devolvemos una lista vacía
+async function cargarUsuarios() {
+  try {
+    return await api('/usuarios')
+  } catch (e) {
+    if (e.status === 403) return []
+    throw e
+  }
+}
 
 const DataService = {
-  // ---- Públicos -----------------------------------------------------------
-  async init() { restaurantes = await api('/restaurantes') },
-  getRestaurantes() { return restaurantes },
-  getRestaurantLogo(id) { return byId(id)?.logo || '' },
-  getAdminMessage(id) { return byId(id)?.mensaje_admin || '' },
-  async loadCarta(id) { return (await api(`/restaurantes/${id}/carta`)).carta },
-  crearReservaPublica(payload) { return api('/reservas/publico', { method: 'POST', body: payload }) },
-  buscarReservas(nombre) { return api('/reservas/buscar?nombre=' + encodeURIComponent(nombre)) },
-  async recoverPassword(email) { return (await api('/recover', { method: 'POST', body: { email } })).found },
-
-  // ---- Sesión -------------------------------------------------------------
-  async login(email, password) {
-    const data = await api('/login', { method: 'POST', body: { email, password } })
-    token = data.token
-    return data.user
+  // ---------- Públicos (no piden sesión) ----------
+  async init() {
+    restaurantes = await api('/restaurantes')
   },
-  logout() { token = null },
 
-  // Todo lo que necesita el panel tras iniciar sesión
+  getRestaurantes() {
+    return restaurantes
+  },
+
+  getRestaurantLogo(id) {
+    return buscarRestaurante(id)?.logo || ''
+  },
+
+  getAdminMessage(id) {
+    return buscarRestaurante(id)?.mensaje_admin || ''
+  },
+
+  async loadCarta(id) {
+    const datos = await api('/restaurantes/' + id + '/carta')
+    return datos.carta
+  },
+
+  crearReservaPublica(reserva) {
+    return api('/reservas/publico', { method: 'POST', body: reserva })
+  },
+
+  buscarReservas(nombre) {
+    return api('/reservas/buscar?nombre=' + encodeURIComponent(nombre))
+  },
+
+  async recoverPassword(email) {
+    const datos = await api('/recover', { method: 'POST', body: { email } })
+    return datos.found
+  },
+
+  // ---------- Sesión ----------
+  async login(email, password) {
+    const datos = await api('/login', { method: 'POST', body: { email, password } })
+    token = datos.token
+    return datos.user
+  },
+
+  logout() {
+    token = null
+  },
+
+  // Todo lo que necesita el panel al entrar
   async loadPrivate() {
     const [rests, planes, reservas, usuarios, novedades, briefings] = await Promise.all([
-      api('/restaurantes'), api('/planes'), api('/reservas'),
-      api('/usuarios').catch(e => { if (e.status === 403) return []; throw e }), // solo el Jefe
-      api('/novedades'), api('/briefings')
+      api('/restaurantes'),
+      api('/planes'),
+      api('/reservas'),
+      cargarUsuarios(),
+      api('/novedades'),
+      api('/briefings')
     ])
     restaurantes = rests
-    const conCarta = rests.filter(r => r.tiene_carta)
-    const cartas = Object.fromEntries(await Promise.all(conCarta.map(async r => [r.id, await this.loadCarta(r.id)])))
-    return {
-      restaurantes: rests, planes, reservas, usuarios, novedades, briefings, cartas,
-      logos: mapBy(rests, 'logo'), mensajes: mapBy(rests, 'mensaje_admin')
+
+    // Logos, mensajes y cartas se guardan por id de restaurante
+    const logos = {}
+    const mensajes = {}
+    const cartas = {}
+    for (const rest of rests) {
+      if (rest.logo) logos[rest.id] = rest.logo
+      if (rest.mensaje_admin) mensajes[rest.id] = rest.mensaje_admin
+      if (rest.tiene_carta) cartas[rest.id] = await this.loadCarta(rest.id)
     }
+
+    return { restaurantes: rests, planes, reservas, usuarios, novedades, briefings, logos, mensajes, cartas }
   },
 
-  // ---- Escritura (requieren sesión) --------------------------------------
-  // Los ids (UUID) los genera el servidor; create* devuelven { id }
-  createReserva(r) { return api('/reservas', { method: 'POST', body: r }) },
-  updateReserva(r) { return api('/reservas/' + encodeURIComponent(r.id), { method: 'PUT', body: r }) },
-  addNovedad(n) { return api('/novedades', { method: 'POST', body: n }) },
-  addBriefing(b) { return api('/briefings', { method: 'POST', body: b }) },
-  addUsuario(u) { return api('/usuarios', { method: 'POST', body: u }) },
-  deleteUsuario(id) { return api('/usuarios/' + encodeURIComponent(id), { method: 'DELETE' }) },
-
-  async patchRestaurante(id, fields) {
-    await api('/restaurantes/' + id, { method: 'PATCH', body: fields })
-    const local = byId(id)
-    if (local) Object.assign(local, fields, 'carta' in fields ? { tiene_carta: !!fields.carta } : {})
+  // ---------- Guardar (piden sesión). El servidor crea los ids y los devuelve en { id } ----------
+  createReserva(reserva) {
+    return api('/reservas', { method: 'POST', body: reserva })
   },
-  saveRestaurante(r) {
-    const { nombre, descripcion, direccion, telefono, email, hora_apertura, hora_cierre, capacidad_maxima, activo } = r
-    return this.patchRestaurante(r.id, {
-      nombre, descripcion, direccion, telefono, email, hora_apertura, hora_cierre,
-      capacidad_maxima: Number(capacidad_maxima) || 60, activo
+
+  updateReserva(reserva) {
+    return api('/reservas/' + reserva.id, { method: 'PUT', body: reserva })
+  },
+
+  addNovedad(novedad) {
+    return api('/novedades', { method: 'POST', body: novedad })
+  },
+
+  addBriefing(briefing) {
+    return api('/briefings', { method: 'POST', body: briefing })
+  },
+
+  addUsuario(usuario) {
+    return api('/usuarios', { method: 'POST', body: usuario })
+  },
+
+  deleteUsuario(id) {
+    return api('/usuarios/' + id, { method: 'DELETE' })
+  },
+
+  // Cambia campos de un restaurante en el servidor y también en la copia local
+  async patchRestaurante(id, campos) {
+    await api('/restaurantes/' + id, { method: 'PATCH', body: campos })
+
+    const local = buscarRestaurante(id)
+    if (!local) return
+    Object.assign(local, campos)
+    if ('carta' in campos) local.tiene_carta = !!campos.carta
+  },
+
+  saveRestaurante(rest) {
+    return this.patchRestaurante(rest.id, {
+      nombre: rest.nombre,
+      descripcion: rest.descripcion,
+      direccion: rest.direccion,
+      telefono: rest.telefono,
+      email: rest.email,
+      hora_apertura: rest.hora_apertura,
+      hora_cierre: rest.hora_cierre,
+      capacidad_maxima: Number(rest.capacidad_maxima) || 60,
+      activo: rest.activo
     })
   },
-  setLogo(id, dataUrl) { return this.patchRestaurante(id, { logo: dataUrl }) },
-  setCarta(id, dataUrl) { return this.patchRestaurante(id, { carta: dataUrl }) },
-  saveAdminMessage(id, mensaje) { return this.patchRestaurante(id, { mensaje_admin: mensaje }) }
+
+  setLogo(id, imagen) {
+    return this.patchRestaurante(id, { logo: imagen })
+  },
+
+  setCarta(id, pdf) {
+    return this.patchRestaurante(id, { carta: pdf })
+  },
+
+  saveAdminMessage(id, mensaje) {
+    return this.patchRestaurante(id, { mensaje_admin: mensaje })
+  }
 }
 
 export default DataService

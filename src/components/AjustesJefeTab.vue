@@ -184,13 +184,13 @@
     <div class="accounts-section" style="margin-top: 30px;">
       <div class="accounts-header">
         <div>
-          <h2>📢 Mensaje para Clientes</h2>
+          <h2>Mensaje para Clientes</h2>
           <p style="color: var(--text-muted); margin-top: 4px;">
             Este mensaje se muestra en el formulario de reserva público de cada restaurante. Puedes indicar instrucciones de pago, políticas de reserva, etc.
           </p>
         </div>
         <router-link to="/reservar" target="_blank" class="btn btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
-          🔗 Ver Formulario Público
+          Ver Formulario Público
         </router-link>
       </div>
 
@@ -214,7 +214,7 @@
         </div>
         <div style="display:flex; justify-content:flex-end; margin-top:8px;">
           <button class="btn btn-primary" style="padding:8px 20px; font-size:0.82rem;" @click="$emit('saveAdminMsg', r.id)">
-            💾 Guardar Mensaje
+            Guardar Mensaje
           </button>
         </div>
       </div>

@@ -7,7 +7,7 @@
       </div>
       <!-- Lista -->
       <div v-if="filteredBriefings.length === 0" class="empty-state">
-        <div class="empty-state-icon">📝</div>
+        <div class="empty-state-icon"><i class="bi bi-journal-text"></i></div>
         <h4>No hay briefings registrados</h4>
         <p>Usa el botón "Agregar Briefing" para crear el primero.</p>
       </div>

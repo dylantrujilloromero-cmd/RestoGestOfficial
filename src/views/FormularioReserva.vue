@@ -40,7 +40,7 @@
         <div v-if="restaurante" class="rest-header-card" :class="'t-' + restaurante.slug">
           <div class="rest-logo-box">
             <img v-if="restaurantLogo" :src="restaurantLogo" :alt="restaurante.nombre">
-            <span v-else>{{ restaurantEmoji }}</span>
+            <i v-else class="bi bi-shop"></i>
           </div>
           <div class="rest-header-info">
             <h2>{{ restaurante.nombre }}</h2>
@@ -296,7 +296,6 @@ const restauranteId = computed(() => route.query.restaurante || '')
 const restaurante = ref(null)
 const restaurantLogo = ref('')
 const restaurantCarta = ref('')
-const restaurantEmoji = ref('🍽️')
 const adminMessage = ref('')
 
 const todayStr = new Date().toISOString().split('T')[0]
@@ -322,12 +321,6 @@ const toastMsg = ref('')
 const toastShow = ref(false)
 const toastType = ref('')
 
-const emojiMap = {
-  '11111111-1111-1111-1111-111111111111': '🍝',
-  '22222222-2222-2222-2222-222222222222': '🌸',
-  '33333333-3333-3333-3333-333333333333': '🌮'
-}
-
 const ocasionLabels = {
   'OTRO': 'Sin ocasión especial', 'CUMPLEAÑOS': 'Cumpleaños',
   'ANIVERSARIO': 'Aniversario', 'CITA_ROMANTICA': 'Cita Romántica',
@@ -339,7 +332,6 @@ onMounted(async () => {
   if (!restauranteId.value) { router.push('/reservar'); return }
   restaurante.value = DataService.getRestaurantes().find(r => r.id === restauranteId.value)
   if (!restaurante.value) { router.push('/reservar'); return }
-  restaurantEmoji.value = emojiMap[restauranteId.value] || '🍽️'
   restaurantLogo.value = DataService.getRestaurantLogo(restauranteId.value)
   adminMessage.value = DataService.getAdminMessage(restauranteId.value) ||
     'Para confirmar tu reserva, realiza tu pago por transferencia o depósito y adjunta el comprobante en este formulario.\n\nTe contactaremos a tu número de teléfono para confirmar tu mesa.\n\n¡Gracias por elegirnos!'
@@ -399,7 +391,7 @@ function validate() {
   if (!form.value.personas) { errors.value.personas = 'Ingresa el número de personas'; ok = false }
   if (!form.value.telefono || form.value.telefono.length < 7) { errors.value.telefono = 'Ingresa el teléfono (mín. 7 dígitos)'; ok = false }
   if (!comprobanteFile.value) {
-    showToast('⚠️ Por favor adjunta el comprobante de pago', 'error')
+    showToast('Por favor adjunta el comprobante de pago', 'error')
     uploadAreaBorderStyle.value = 'border-color: #e74c3c'
     ok = false
   }
@@ -437,7 +429,7 @@ async function confirmarReserva() {
       _guardadoEnBD: true
     }
     showSuccess.value = true
-    showToast('¡Reserva registrada con éxito! 🎉', 'success')
+    showToast('¡Reserva registrada con éxito!', 'success')
   } catch (err) {
     showToast('No se pudo registrar la reserva: ' + err.message, 'error')
   } finally {
@@ -501,7 +493,7 @@ function downloadReserva() {
   a.download = 'Reserva_' + r.restaurante_nombre.replace(/\s+/g, '_') + '_' + r.fecha + '.html'
   a.click()
   URL.revokeObjectURL(url)
-  showToast('Comprobante descargado correctamente ✓', 'success')
+  showToast('Comprobante descargado correctamente', 'success')
 }
 </script>
 

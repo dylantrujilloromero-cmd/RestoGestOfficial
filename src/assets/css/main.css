@@ -1,8 +1,4 @@
-/* ==========================================================================
-   RESTOGEST — TEMA PASTEL SOBRE BOOTSTRAP 5
-   Bootstrap pone la base (reinicio, formularios, botones); aquí van la
-   paleta, la tipografía y los componentes propios de la app.
-   ========================================================================== */
+/* RESTOGEST — TEMA PASTEL SOBRE BOOTSTRAP 5 */
 
 :root {
   /* Paleta pastel */
@@ -75,9 +71,7 @@ body {
 
 h1, h2, h3, .login-title { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
 
-/* ==========================================================================
-   BOTONES (Bootstrap + variables propias)
-   ========================================================================== */
+/* BOTONES (Bootstrap + variables propias) */
 .btn {
   --bs-btn-font-weight: 700;
   --bs-btn-border-radius: var(--radius-md);
@@ -135,9 +129,7 @@ h1, h2, h3, .login-title { font-family: var(--font-display); font-weight: 600; l
   --bs-btn-active-border-color: #f1aab1;
 }
 
-/* ==========================================================================
-   FORMULARIOS
-   ========================================================================== */
+/* FORMULARIOS */
 .form-control, .form-select {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -175,9 +167,7 @@ textarea.form-control { resize: vertical; min-height: 84px; }
 input:checked + .slider { background: var(--lilac-deep); }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* ==========================================================================
-   BARRA LATERAL
-   ========================================================================== */
+/* BARRA LATERAL */
 .sidebar {
   width: 272px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; z-index: 20;
   display: flex; flex-direction: column; overflow-y: auto;
@@ -236,9 +226,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .nav-icon { font-size: 1.1rem; line-height: 1; display: inline-flex; color: var(--lilac-deep); }
 .sidebar-foot { padding: 16px 22px; font-size: 0.75rem; color: var(--ink-soft); border-top: 1px solid var(--line); }
 
-/* ==========================================================================
-   CONTENIDO Y BARRA SUPERIOR
-   ========================================================================== */
+/* CONTENIDO Y BARRA SUPERIOR */
 .main-wrapper { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-y: auto; max-height: 100vh; }
 
 .topbar {
@@ -271,9 +259,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .logo-upload-btn:hover { transform: scale(1.1); }
 
-/* ==========================================================================
-   MÉTRICAS
-   ========================================================================== */
+/* MÉTRICAS */
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 26px; }
 .metric-card {
   background: var(--paper); padding: 18px 20px; border-radius: var(--radius-lg);
@@ -290,9 +276,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .metric-info h3 { font-size: 1.5rem; margin: 0; line-height: 1.1; }
 .metric-info p { font-size: 0.8rem; margin: 2px 0 0; color: var(--ink-soft); }
 
-/* ==========================================================================
-   CALENDARIO
-   ========================================================================== */
+/* CALENDARIO */
 .calendar-card {
   background: var(--paper); border-radius: var(--radius-lg); border: 1px solid var(--line);
   overflow: hidden; margin-bottom: 26px;
@@ -334,9 +318,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .badge-item.pendiente { background: var(--butter); color: var(--butter-ink); }
 .badge-item.cancelada { background: var(--rose); color: var(--rose-ink); text-decoration: line-through; }
 
-/* ==========================================================================
-   RESERVAS DEL DÍA / LISTA
-   ========================================================================== */
+/* RESERVAS DEL DÍA / LISTA */
 .day-schedule-section {
   background: var(--paper); border-radius: var(--radius-lg); border: 1px solid var(--line);
   padding: 24px; margin-bottom: 26px;
@@ -384,9 +366,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .res-notes { font-size: 0.88rem; background: var(--butter); color: var(--butter-ink); padding: 8px 12px; border-radius: var(--radius-sm); }
 .res-actions-bar { display: flex; justify-content: flex-end; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
 
-/* ==========================================================================
-   PANEL DEL JEFE
-   ========================================================================== */
+/* PANEL DEL JEFE */
 .jefe-panel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 20px; }
 .restaurant-edit-card {
   background: var(--paper); border-radius: var(--radius-lg); border: 1px solid var(--line);
@@ -424,9 +404,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .user-card-rest { font-size: 0.78rem; color: var(--lilac-deep); font-weight: 700; margin-top: 3px; }
 .user-card-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
-/* ==========================================================================
-   MODALES
-   ========================================================================== */
+/* MODALES */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 999; padding: 20px;
   display: flex; align-items: center; justify-content: center;
@@ -451,9 +429,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   display: flex; justify-content: flex-end; gap: 10px;
 }
 
-/* ==========================================================================
-   AVISO (TOAST) — pastel, abajo a la derecha
-   ========================================================================== */
+/* AVISO (TOAST) — pastel, abajo a la derecha */
 .app-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
 .app-toast {
   background: var(--paper); color: var(--ink); padding: 13px 20px; border-radius: var(--radius-md);
@@ -462,9 +438,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 @keyframes toastIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 
-/* ==========================================================================
-   LOGIN
-   ========================================================================== */
+/* LOGIN */
 .login-screen {
   position: relative; display: flex; align-items: center; justify-content: center;
   width: 100%; min-height: 100vh; padding: 20px; overflow: hidden;
@@ -499,17 +473,13 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .login-hint { text-align: center; font-size: 0.78rem; color: var(--ink-soft); margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
 
-/* ==========================================================================
-   TEMAS POR RESTAURANTE (solo cambian variables)
-   ========================================================================== */
+/* TEMAS POR RESTAURANTE (solo cambian variables) */
 .theme-innamorato { --theme-bg: #f6c3bd; --theme-ink: #5a211c; --theme-soft: #fdeceb; --theme-deep: #cf6a5f; }
 .theme-cielo-rosa { --theme-bg: #f6c6dc; --theme-ink: #5d1a3c; --theme-soft: #fdeef5; --theme-deep: #cc5a93; }
 .theme-casa-juarez { --theme-bg: #cdd4e3; --theme-ink: #252b3f; --theme-soft: #eff1f7; --theme-deep: #5a6690; }
 .theme-primavera { --theme-bg: #f6e3a1; --theme-ink: #5a4806; --theme-soft: #fcf6dc; --theme-deep: #b89a2c; }
 
-/* ==========================================================================
-   RESPONSIVO
-   ========================================================================== */
+/* RESPONSIVO */
 @media (max-width: 900px) {
   body { flex-direction: column; }
   #app { flex-direction: column; }

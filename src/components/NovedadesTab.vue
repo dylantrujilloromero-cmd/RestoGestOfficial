@@ -16,7 +16,7 @@
       </div>
       <!-- Lista -->
       <div v-if="filteredNovedades.length === 0" class="empty-state">
-        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-icon"><i class="bi bi-megaphone"></i></div>
         <h4>No hay novedades registradas</h4>
         <p>Usa el botón "Agregar Novedad" para crear la primera.</p>
       </div>

@@ -65,7 +65,7 @@
       </div>
 
       <div v-if="dayReservations.length === 0" class="empty-state">
-        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
         <h4>No hay reservas programadas para este día</h4>
         <p>El administrador puede añadir una nueva reserva usando el botón superior.</p>
       </div>

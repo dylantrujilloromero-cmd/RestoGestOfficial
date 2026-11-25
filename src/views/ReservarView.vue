@@ -51,7 +51,7 @@
       <article v-for="r in restaurantesActivos" :key="r.id" class="rest-card" :class="bannerClass[r.id] || 'banner-innamorato'">
         <div class="rest-banner">
           <img v-if="getRestaurantLogo(r.id)" class="logo-img" :src="getRestaurantLogo(r.id)" :alt="r.nombre">
-          <span v-else class="emoji-fallback">{{ bannerEmoji[r.id] || '🍽️' }}</span>
+          <i v-else class="bi bi-shop banner-icon"></i>
         </div>
         <div class="rest-body">
           <h2 class="rest-name">{{ r.nombre }}</h2>
@@ -88,16 +88,11 @@ const bannerClass = {
   '22222222-2222-2222-2222-222222222222': 'banner-cielorosa',
   '33333333-3333-3333-3333-333333333333': 'banner-casajuarez'
 }
-const bannerEmoji = {
-  '11111111-1111-1111-1111-111111111111': '🍝',
-  '22222222-2222-2222-2222-222222222222': '🌸',
-  '33333333-3333-3333-3333-333333333333': '🌮'
-}
 const statusLabel = {
-  CONFIRMADA: '✅ Confirmada',
+  CONFIRMADA: 'Confirmada',
   PENDIENTE: '⏳ Pendiente',
-  CANCELADA: '❌ Cancelada',
-  COMPLETADA: '🏁 Completada'
+  CANCELADA: 'Cancelada',
+  COMPLETADA: 'Completada'
 }
 
 function getRestaurantLogo(restId) {
@@ -129,7 +124,7 @@ async function buscarReserva() {
   }
 
   if (encontradas.length === 0) {
-    searchResult.value = { type: 'error', message: `❌ No encontramos ninguna reserva con el nombre "<strong>${escapeHtml(query)}</strong>".<br>Verifica el nombre e intenta de nuevo.` }
+    searchResult.value = { type: 'error', message: `No encontramos ninguna reserva con el nombre "<strong>${escapeHtml(query)}</strong>".<br>Verifica el nombre e intenta de nuevo.` }
     return
   }
 
@@ -211,6 +206,7 @@ async function buscarReserva() {
 }
 .rest-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(58, 54, 80, 0.12); }
 .rest-banner { height: 124px; background: var(--c-bg); display: flex; align-items: center; justify-content: center; font-size: 3.2rem; position: relative; overflow: hidden; }
+.banner-icon { font-size: 3rem; color: var(--c-ink); opacity: 0.55; }
 .rest-banner .logo-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
 .rest-body { padding: 22px 24px 26px; flex: 1; display: flex; flex-direction: column; }
 .rest-name { font-size: 1.3rem; margin: 0 0 6px; }

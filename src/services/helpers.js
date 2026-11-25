@@ -54,12 +54,12 @@ export const ocasionesDisponibles = [
 
 export const ocasionesPublicas = [
   { id: 'OTRO',              label: 'Sin ocasión especial' },
-  { id: 'CUMPLEAÑOS',        label: '🎂 Cumpleaños' },
-  { id: 'ANIVERSARIO',       label: '💑 Aniversario' },
-  { id: 'CITA_ROMANTICA',    label: '❤️ Cita Romántica' },
-  { id: 'REUNION_FAMILIAR',  label: '👨‍👩‍👧 Reunión Familiar' },
-  { id: 'REUNION_NEGOCIOS',  label: '💼 Reunión de Negocios' },
-  { id: 'GRADUACION',        label: '🎓 Graduación' }
+  { id: 'CUMPLEAÑOS',        label: 'Cumpleaños' },
+  { id: 'ANIVERSARIO',       label: 'Aniversario' },
+  { id: 'CITA_ROMANTICA',    label: 'Cita Romántica' },
+  { id: 'REUNION_FAMILIAR',  label: 'Reunión Familiar' },
+  { id: 'REUNION_NEGOCIOS',  label: 'Reunión de Negocios' },
+  { id: 'GRADUACION',        label: 'Graduación' }
 ]
 
 export const planesSelector = [

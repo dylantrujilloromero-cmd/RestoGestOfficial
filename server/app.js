@@ -6,7 +6,7 @@ import { query } from './db.js'
 const app = express()
 app.use(express.json({ limit: '5mb' }))
 
-// ---------------------------------------------------------------- utilidades
+// Ayudas
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status }
 }
@@ -41,7 +41,7 @@ const onlyJefe = (req, _res, next) =>
 // El JEFE ve todos los restaurantes; los demás roles solo el suyo
 const scopeRestaurante = (req, wanted) => (req.user.rol === 'JEFE' ? vacioANull(wanted) : req.user.restaurante_id)
 
-// ---------------------------------------------------------------- consultas base
+// Consulta de reservas
 const HORA_FMT = col => `to_char(${col}, 'HH24:MI')`
 const SELECT_RESERVAS = `SELECT r.id, r.restaurante_id, r.plan_id, r.plan,
     to_char(r.fecha, 'YYYY-MM-DD') AS fecha, ${HORA_FMT('r.hora')} AS hora, r.numero_personas,
@@ -54,7 +54,7 @@ const SELECT_RESERVAS = `SELECT r.id, r.restaurante_id, r.plan_id, r.plan,
   LEFT JOIN usuarios cu ON cu.id = r.creado_por_usuario_id
   LEFT JOIN usuarios eu ON eu.id = r.ultimo_editor_usuario_id`
 
-// Valida y normaliza los datos de una reserva (sirve para crear y para editar)
+// Revisa los datos de una reserva (para crear y para editar)
 function datosReserva(b) {
   const personas = Number(b.numero_personas)
   const d = {
@@ -87,7 +87,7 @@ async function insertReserva(d, extra) {
   return r
 }
 
-// ---------------------------------------------------------------- públicas
+// Rutas públicas (sin sesión)
 app.get('/api/restaurantes', wrap(async (_req, res) => {
   res.json(await query(`SELECT id, nombre, slug, descripcion, direccion, telefono, email,
     ${HORA_FMT('hora_apertura')} AS hora_apertura, ${HORA_FMT('hora_cierre')} AS hora_cierre,
@@ -118,7 +118,7 @@ app.post('/api/reservas/publico', wrap(async (req, res) => {
   res.status(201).json(saved)
 }))
 
-// Consulta de estado por nombre: el teléfono se enmascara y no se devuelve el comprobante
+// Consultar una reserva por nombre: el teléfono sale tapado y sin el comprobante
 app.get('/api/reservas/buscar', wrap(async (req, res) => {
   const nombre = String(req.query.nombre || '').trim()
   if (nombre.length < 3) throw new HttpError(400, 'Escribe al menos 3 caracteres')
@@ -139,13 +139,13 @@ app.post('/api/login', wrap(async (req, res) => {
   res.json({ token: jwt.sign(user, secret(), { expiresIn: '12h' }), user })
 }))
 
-// Igual que antes: solo indica si el correo existe (no se envía ningún correo real)
+// Solo dice si el correo existe, no envía ningún correo
 app.post('/api/recover', wrap(async (req, res) => {
   const [u] = await query('SELECT 1 FROM usuarios WHERE lower(email) = lower($1) AND activo', [String(req.body?.email || '').trim()])
   res.json({ found: !!u })
 }))
 
-// ---------------------------------------------------------------- protegidas
+// Rutas con sesión
 app.use('/api', auth)
 
 app.get('/api/planes', wrap(async (req, res) => {
@@ -232,7 +232,7 @@ app.post('/api/briefings', wrap(async (req, res) => {
   res.status(201).json(saved)
 }))
 
-// Campos de restaurantes que se pueden editar. "carta" se guarda en carta_pdf_datos / carta_pdf_nombre.
+// Campos del restaurante que se pueden editar (la carta se guarda aparte)
 const RESTAURANTE_COLS = ['nombre', 'descripcion', 'direccion', 'telefono', 'email', 'hora_apertura',
   'hora_cierre', 'capacidad_maxima', 'activo', 'logo', 'mensaje_admin']
 
@@ -283,7 +283,7 @@ app.delete('/api/usuarios/:id', onlyJefe, wrap(async (req, res) => {
   res.json({ ok: true })
 }))
 
-// ---------------------------------------------------------------- errores
+// Errores
 app.use('/api', (_req, _res, next) => next(new HttpError(404, 'Ruta no encontrada')))
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {

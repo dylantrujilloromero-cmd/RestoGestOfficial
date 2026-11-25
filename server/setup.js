@@ -1,12 +1,9 @@
-// Crea las tablas en Neon (PostgreSQL) y carga los datos iniciales. Es seguro ejecutarlo varias veces.
+// Crea las tablas en Neon y carga los datos iniciales. Se puede ejecutar varias veces sin problema.
 //   npm run db:setup
 //
-// Es la versión PostgreSQL de "Base_De_Datos_Restaurantes.sql" (MariaDB) del dueño: mismas tablas,
-// columnas, restricciones y datos. Cambios por el motor:
-//   - UUID() -> gen_random_uuid()      - ON UPDATE CURRENT_TIMESTAMP -> trigger set_updated_at()
-//   - LONGTEXT -> text                 - SHA2() -> bcrypt (lo recomienda la nota del propio script)
-// Columnas añadidas porque la web las necesita: restaurantes (slug, descripcion, logo, mensaje_admin, orden)
-// y planes_reserva (incluye_postre).
+// Es el SQL del dueño (Base_De_Datos_Restaurantes.sql) pasado de MariaDB a PostgreSQL.
+// Agregué unas columnas que necesita la web: slug, descripcion, logo, mensaje_admin y orden
+// en restaurantes, e incluye_postre en planes_reserva.
 import bcrypt from 'bcryptjs'
 import { query } from './db.js'
 
@@ -129,7 +126,7 @@ const SCHEMA = [
     LEFT JOIN planes_reserva p ON r.plan_id = p.id
     LEFT JOIN usuarios u ON r.creado_por_usuario_id = u.id`,
 
-  // Equivalente a "ON UPDATE CURRENT_TIMESTAMP" de MariaDB
+  // Actualiza updated_at solo (en MariaDB era ON UPDATE CURRENT_TIMESTAMP)
   `CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
     BEGIN NEW.updated_at = now(); RETURN NEW; END; $$ LANGUAGE plpgsql`,
   ...TABLAS_CON_UPDATED_AT.flatMap(t => [
@@ -142,65 +139,118 @@ const R1 = '11111111-1111-1111-1111-111111111111'
 const R2 = '22222222-2222-2222-2222-222222222222'
 const R3 = '33333333-3333-3333-3333-333333333333'
 
-// [id, nombre, slug, descripcion, direccion, telefono, email, apertura, cierre, capacidad, orden, mensaje_admin]
-const RESTAURANTES = [
-  [R1, 'INNAMORATO FUSION', 'innamorato-fusion', 'Cocina fusión de autor con ambiente romántico y sabores únicos del mundo.', 'Av. Primavera 1020, Miraflores', '+51 987 654 321', 'contacto@innamoratofusion.com', '12:30:00', '23:30:00', 70, 1,
-    'Para confirmar tu reserva en INNAMORATO FUSION, realiza tu pago por transferencia bancaria y adjunta el comprobante en este formulario.\n\nNos comunicaremos contigo vía telefónica para confirmar tu mesa.\n\n¡Gracias por elegirnos!'],
-  [R2, 'CIELO ROSA', 'cielo-rosa', 'Experiencia gastronómica sofisticada con vista panorámica y cocina de temporada.', 'Calle Malecón de la Reserva 450', '+51 987 654 322', 'reservas@cielorosa.com', '12:00:00', '23:00:00', 50, 2,
-    'Bienvenido a CIELO ROSA. Por favor adjunta tu comprobante de pago para apartar tu reserva.\n\nUn representante te contactará para confirmar disponibilidad.\n\n¡Te esperamos!'],
-  [R3, 'CASA JUAREZ', 'casa-juarez', 'Tradición y sabor en cada platillo, con recetas auténticas y ambiente familiar.', 'Jr. Los Conquistadores 880, San Isidro', '+51 987 654 323', 'info@casajuarez.com', '13:00:00', '23:00:00', 65, 3,
-    'Para reservar en CASA JUAREZ adjunta el comprobante de tu depósito o transferencia.\n\nRecuerda llegar puntual a tu hora de reserva.\n\n¡Nos vemos pronto!']
+const restaurantes = [
+  {
+    id: R1,
+    nombre: 'INNAMORATO FUSION',
+    slug: 'innamorato-fusion',
+    descripcion: 'Cocina fusión de autor con ambiente romántico y sabores únicos del mundo.',
+    direccion: 'Av. Primavera 1020, Miraflores',
+    telefono: '+51 987 654 321',
+    email: 'contacto@innamoratofusion.com',
+    apertura: '12:30',
+    cierre: '23:30',
+    capacidad: 70,
+    orden: 1,
+    mensaje: 'Para confirmar tu reserva en INNAMORATO FUSION, realiza tu pago por transferencia bancaria y adjunta el comprobante en este formulario.\n\nNos comunicaremos contigo vía telefónica para confirmar tu mesa.\n\n¡Gracias por elegirnos!'
+  },
+  {
+    id: R2,
+    nombre: 'CIELO ROSA',
+    slug: 'cielo-rosa',
+    descripcion: 'Experiencia gastronómica sofisticada con vista panorámica y cocina de temporada.',
+    direccion: 'Calle Malecón de la Reserva 450',
+    telefono: '+51 987 654 322',
+    email: 'reservas@cielorosa.com',
+    apertura: '12:00',
+    cierre: '23:00',
+    capacidad: 50,
+    orden: 2,
+    mensaje: 'Bienvenido a CIELO ROSA. Por favor adjunta tu comprobante de pago para apartar tu reserva.\n\nUn representante te contactará para confirmar disponibilidad.\n\n¡Te esperamos!'
+  },
+  {
+    id: R3,
+    nombre: 'CASA JUAREZ',
+    slug: 'casa-juarez',
+    descripcion: 'Tradición y sabor en cada platillo, con recetas auténticas y ambiente familiar.',
+    direccion: 'Jr. Los Conquistadores 880, San Isidro',
+    telefono: '+51 987 654 323',
+    email: 'info@casajuarez.com',
+    apertura: '13:00',
+    cierre: '23:00',
+    capacidad: 65,
+    orden: 3,
+    mensaje: 'Para reservar en CASA JUAREZ adjunta el comprobante de tu depósito o transferencia.\n\nRecuerda llegar puntual a tu hora de reserva.\n\n¡Nos vemos pronto!'
+  }
 ]
 
-// Las contraseñas iniciales se pueden cambiar por variable de entorno al ejecutar el setup
-const PASS_JEFE = process.env.SEED_JEFE_PASSWORD || 'Jefe123'
-const PASS_ADMIN = process.env.SEED_ADMIN_PASSWORD || 'admin123'
-// [id, restaurante_id, nombre, email, password, rol]
-const USUARIOS = [
-  ['55555555-5555-5555-5555-555555555551', null, 'Jefe General', 'jefe_restaurantes@gmail.com', PASS_JEFE, 'JEFE'],
-  ['55555555-5555-5555-5555-555555555552', R1, 'Administrador Innamorato', 'admin.innamorato@reservas.com', PASS_ADMIN, 'ADMINISTRADOR'],
-  ['55555555-5555-5555-5555-555555555553', R2, 'Administrador Cielo Rosa', 'admin.cielorosa@reservas.com', PASS_ADMIN, 'ADMINISTRADOR'],
-  ['55555555-5555-5555-5555-555555555554', R3, 'Administrador Casa Juarez', 'admin.casajuarez@reservas.com', PASS_ADMIN, 'ADMINISTRADOR']
+// Las contraseñas iniciales se pueden cambiar con estas variables al ejecutar el setup
+const claveJefe = process.env.SEED_JEFE_PASSWORD || 'Jefe123'
+const claveAdmin = process.env.SEED_ADMIN_PASSWORD || 'admin123'
+
+const usuarios = [
+  { id: '55555555-5555-5555-5555-555555555551', restaurante_id: null, nombre: 'Jefe General', email: 'jefe_restaurantes@gmail.com', password: claveJefe, rol: 'JEFE' },
+  { id: '55555555-5555-5555-5555-555555555552', restaurante_id: R1, nombre: 'Administrador Innamorato', email: 'admin.innamorato@reservas.com', password: claveAdmin, rol: 'ADMINISTRADOR' },
+  { id: '55555555-5555-5555-5555-555555555553', restaurante_id: R2, nombre: 'Administrador Cielo Rosa', email: 'admin.cielorosa@reservas.com', password: claveAdmin, rol: 'ADMINISTRADOR' },
+  { id: '55555555-5555-5555-5555-555555555554', restaurante_id: R3, nombre: 'Administrador Casa Juarez', email: 'admin.casajuarez@reservas.com', password: claveAdmin, rol: 'ADMINISTRADOR' }
 ]
 
-// [id, restaurante_id, nombre, descripcion, precio, incluye_postre]. Los dos primeros son los del SQL del dueño.
-const PLANES = [
-  ['66666666-6666-6666-6666-666666666661', R1, 'Plan Romántico Fusión', 'Plan especial romántico en INNAMORATO FUSION', 30000, true],
-  ['66666666-6666-6666-6666-666666666662', R2, 'Aniversario Verano', 'Decoración romántica en CIELO ROSA', 50000, true],
-  ['66666666-6666-6666-6666-666666666663', R1, 'Plan Degustación Innamorato', null, 0, true],
-  ['66666666-6666-6666-6666-666666666664', R1, 'Reserva Estándar', null, 0, false],
-  ['66666666-6666-6666-6666-666666666665', R2, 'Plan Vista Panorámica', null, 0, true],
-  ['66666666-6666-6666-6666-666666666666', R2, 'Reserva Estándar Cielo Rosa', null, 0, false],
-  ['66666666-6666-6666-6666-666666666667', R3, 'Plan Familiar Casa Juarez', null, 0, true],
-  ['66666666-6666-6666-6666-666666666668', R3, 'Reserva Estándar Casa Juarez', null, 0, false]
+// Los dos primeros planes son los del SQL del dueño
+const planes = [
+  { id: '66666666-6666-6666-6666-666666666661', restaurante_id: R1, nombre: 'Plan Romántico Fusión', descripcion: 'Plan especial romántico en INNAMORATO FUSION', precio: 30000, incluye_postre: true },
+  { id: '66666666-6666-6666-6666-666666666662', restaurante_id: R2, nombre: 'Aniversario Verano', descripcion: 'Decoración romántica en CIELO ROSA', precio: 50000, incluye_postre: true },
+  { id: '66666666-6666-6666-6666-666666666663', restaurante_id: R1, nombre: 'Plan Degustación Innamorato', descripcion: null, precio: 0, incluye_postre: true },
+  { id: '66666666-6666-6666-6666-666666666664', restaurante_id: R1, nombre: 'Reserva Estándar', descripcion: null, precio: 0, incluye_postre: false },
+  { id: '66666666-6666-6666-6666-666666666665', restaurante_id: R2, nombre: 'Plan Vista Panorámica', descripcion: null, precio: 0, incluye_postre: true },
+  { id: '66666666-6666-6666-6666-666666666666', restaurante_id: R2, nombre: 'Reserva Estándar Cielo Rosa', descripcion: null, precio: 0, incluye_postre: false },
+  { id: '66666666-6666-6666-6666-666666666667', restaurante_id: R3, nombre: 'Plan Familiar Casa Juarez', descripcion: null, precio: 0, incluye_postre: true },
+  { id: '66666666-6666-6666-6666-666666666668', restaurante_id: R3, nombre: 'Reserva Estándar Casa Juarez', descripcion: null, precio: 0, incluye_postre: false }
 ]
 
-for (const stmt of SCHEMA) await query(stmt)
-console.log('✔ Tablas listas')
+// Crear las tablas
+for (const sentencia of SCHEMA) {
+  await query(sentencia)
+}
+console.log('Tablas listas')
 
+// Cargar los datos iniciales solo si la base está vacía
 const [{ n }] = await query('SELECT count(*)::int AS n FROM restaurantes')
 if (n > 0) {
-  console.log('✔ Ya hay datos, no se vuelve a cargar el contenido inicial')
+  console.log('Ya hay datos, no se vuelve a cargar nada')
 } else {
-  for (const r of RESTAURANTES) {
-    await query(`INSERT INTO restaurantes (id, nombre, slug, descripcion, direccion, telefono, email,
-      hora_apertura, hora_cierre, capacidad_maxima, orden, mensaje_admin)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, r)
+  for (const r of restaurantes) {
+    await query(
+      `INSERT INTO restaurantes (id, nombre, slug, descripcion, direccion, telefono, email,
+        hora_apertura, hora_cierre, capacidad_maxima, orden, mensaje_admin)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [r.id, r.nombre, r.slug, r.descripcion, r.direccion, r.telefono, r.email, r.apertura, r.cierre, r.capacidad, r.orden, r.mensaje]
+    )
   }
-  for (const [id, rid, nombre, email, pass, rol] of USUARIOS) {
-    await query('INSERT INTO usuarios (id, restaurante_id, nombre, email, password_hash, rol) VALUES ($1,$2,$3,$4,$5,$6)',
-      [id, rid, nombre, email, await bcrypt.hash(pass, 10), rol])
+
+  for (const u of usuarios) {
+    await query(
+      'INSERT INTO usuarios (id, restaurante_id, nombre, email, password_hash, rol) VALUES ($1, $2, $3, $4, $5, $6)',
+      [u.id, u.restaurante_id, u.nombre, u.email, await bcrypt.hash(u.password, 10), u.rol]
+    )
   }
-  for (const p of PLANES) {
-    await query('INSERT INTO planes_reserva (id, restaurante_id, nombre, descripcion, precio, incluye_postre) VALUES ($1,$2,$3,$4,$5,$6)', p)
+
+  for (const p of planes) {
+    await query(
+      'INSERT INTO planes_reserva (id, restaurante_id, nombre, descripcion, precio, incluye_postre) VALUES ($1, $2, $3, $4, $5, $6)',
+      [p.id, p.restaurante_id, p.nombre, p.descripcion, p.precio, p.incluye_postre]
+    )
   }
-  // Reservas de ejemplo del SQL del dueño (bórralas cuando ya no las necesites)
-  await query(`INSERT INTO reservas (id, restaurante_id, plan_id, plan, creado_por_usuario_id, fecha, hora,
-      numero_personas, nombre_cliente, telefono_contacto, email_contacto, ocasion) VALUES
-    ('77777777-7777-7777-7777-777777777771', $1, '66666666-6666-6666-6666-666666666661', '50',
-      '55555555-5555-5555-5555-555555555552', CURRENT_DATE, '14:00', 4, 'Juan Perez', '3001234567', 'juan@example.com', 'CUMPLEAÑOS'),
-    ('77777777-7777-7777-7777-777777777772', $2, '66666666-6666-6666-6666-666666666662', '80',
-      '55555555-5555-5555-5555-555555555553', CURRENT_DATE + 1, '20:00', 2, 'Maria Gomez', '3109876543', 'maria@example.com', 'ANIVERSARIO')`,
-  [R1, R2])
-  console.log('✔ Restaurantes, usuarios, planes y reservas de ejemplo cargados')
+
+  // Dos reservas de ejemplo del SQL del dueño (bórralas cuando ya no las necesites)
+  await query(
+    `INSERT INTO reservas (id, restaurante_id, plan_id, plan, creado_por_usuario_id, fecha, hora,
+       numero_personas, nombre_cliente, telefono_contacto, email_contacto, ocasion) VALUES
+     ('77777777-7777-7777-7777-777777777771', $1, '66666666-6666-6666-6666-666666666661', '50',
+       '55555555-5555-5555-5555-555555555552', CURRENT_DATE, '14:00', 4, 'Juan Perez', '3001234567', 'juan@example.com', 'CUMPLEAÑOS'),
+     ('77777777-7777-7777-7777-777777777772', $2, '66666666-6666-6666-6666-666666666662', '80',
+       '55555555-5555-5555-5555-555555555553', CURRENT_DATE + 1, '20:00', 2, 'Maria Gomez', '3109876543', 'maria@example.com', 'ANIVERSARIO')`,
+    [R1, R2]
+  )
+
+  console.log('Restaurantes, usuarios, planes y reservas de ejemplo cargados')
 }
