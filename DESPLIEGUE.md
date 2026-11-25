@@ -14,19 +14,27 @@ npm run db:setup                 # crea las tablas (el SQL del dueño pasado a P
 npm run api                      # terminal 1: API en http://localhost:3001
 npm run dev                      # terminal 2: web en http://localhost:5173
 ```
+
+## Datos y contraseñas
 Los datos (restaurantes, planes, usuarios, mensajes...) viven solo en Neon, no en el código. En una base vacía,
-cárgalos en Neon (por ejemplo con el SQL del dueño en el *SQL Editor*) o créalos desde la app.
+cárgalos desde el *SQL Editor* de Neon (por ejemplo con el SQL del dueño) o créalos desde la app.
 
-Para crear el primer Jefe en una base vacía (la contraseña se guarda con hash en la base):
-```powershell
-npm run db:jefe -- correo@ejemplo.com NuevaClave123 "Nombre del Jefe"
-```
-Después el Jefe crea las cuentas de administrador desde la app (*Ajustes y cuentas*).
+Las contraseñas se guardan con hash. En el *SQL Editor* de Neon:
 
-Para cambiar la contraseña de alguien que ya existe:
-```powershell
-npm run db:clave -- correo@ejemplo.com NuevaClave123
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Cambiar la contraseña de un usuario
+UPDATE usuarios
+SET password_hash = crypt('TuNuevaClave', gen_salt('bf', 10))
+WHERE lower(email) = lower('correo@ejemplo.com');
+
+-- Crear el primer Jefe en una base vacía
+INSERT INTO usuarios (nombre, email, password_hash, rol)
+VALUES ('Jefe', 'correo@ejemplo.com', crypt('TuNuevaClave', gen_salt('bf', 10)), 'JEFE');
 ```
+
+Las cuentas de administrador las crea el Jefe desde la app (*Ajustes y cuentas*).
 
 ## 3. Desplegar en Vercel
 1. Sube el proyecto a GitHub (`.env` ya está en `.gitignore`).
